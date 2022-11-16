@@ -1,0 +1,22 @@
+{
+  "name": "ai-factor-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vytenisu/ai-factor-check.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vytenisu/ai-factor-check/issues"
+  },
+  "homepage": "https://github.com/vytenisu/ai-factor-check#readme",
+  "dependencies": {
+    "@tensorflow/tfjs-node-gpu": "^4.0.0"
+  }
+}

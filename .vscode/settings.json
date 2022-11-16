@@ -1,0 +1,6 @@
+{
+  "terminal.integrated.env.windows": {
+    "PATH": "C:/Python27;${env:PATH}"
+  },
+  "cSpell.words": ["adagrad", "relu", "softmax"]
+}
