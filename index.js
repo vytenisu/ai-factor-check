@@ -15,6 +15,10 @@ const createModel = async () => {
     .dense({ units: 20, activation: "relu" })
     .apply(inputs);
 
+  // const hidden2 = tf.layers
+  //   .dense({ units: 20, activation: "relu" })
+  //   .apply(hidden);
+
   const outputs = tf.layers
     .dense({ units: 1, activation: "softmax" })
     .apply(hidden);
@@ -24,8 +28,9 @@ const createModel = async () => {
   model.compile({
     loss: "meanSquaredError",
     // optimizer: "adagrad",
-    optimizer: "adam",
-    metrics: [tf.metrics.binaryAccuracy],
+    optimizer: tf.train.adam(100),
+    // metrics: [tf.metrics.binaryAccuracy],
+    metrics: ["accuracy"],
   });
 
   return model;
@@ -51,90 +56,63 @@ const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-// const getRandomArrayELement = (data) =>
-//   data[Math.floor(Math.random() * data.length)];
+const getGood = (mainNumber) => mainNumber;
 
-const getGoodFactor = (mainNumber) => {
-  let candidateFactor = getRandomNumber(1, mainNumber);
+const getBad = (mainNumber) => {
+  let candidate = getRandomNumber(1, 1000000 - 1);
 
-  while (mainNumber % candidateFactor) {
-    candidateFactor = getRandomNumber(1, mainNumber);
+  if (candidate == mainNumber) {
+    return getBad();
   }
 
-  return candidateFactor;
-};
-
-const getBadFactor = (mainNumber) => {
-  let candidateFactor = getRandomNumber(1, mainNumber);
-
-  while (!(mainNumber % candidateFactor)) {
-    candidateFactor = getRandomNumber(1, mainNumber);
-  }
-
-  return candidateFactor;
+  return candidate;
 };
 
 const generateTrainingItems = () => {
   const number = getRandomNumber(3, 1000000 - 1);
   return [
-    [number, getGoodFactor(number)],
-    [number, getBadFactor(number)],
+    [number, getGood(number)],
+    [number, getBad(number)],
   ];
 };
 
 const generateTrainingData = (amountOfPairs) => {
   let data = [];
-  // let labels = [];
 
   for (let i = 0; i < amountOfPairs; i++) {
     const [good, bad] = generateTrainingItems();
-    data = [...data, { xs: good, ys: 1 }, { xs: bad, ys: 0 }];
-    // labels.push(1);
-    // labels.push(0);
+    data = [...data, { xs: good, ys: [1] }, { xs: bad, ys: [0] }];
   }
 
-  // const xs = tf.tensor2d(data, [data.length, 2]);
-  // const ys = tf.tensor1d(labels);
-
-  // tf.data.csv({json: })
-
-  return tf.data.array(data).batch(10);
+  return data;
 };
 
-const trainingData = generateTrainingData(1000);
-const validationData = generateTrainingData(200);
+const generateTrainingDataset = (amountOfPairs) =>
+  tf.data.array(generateTrainingData(amountOfPairs)).batch(10);
 
-// const callback = tf.callbacks.earlyStopping({
-//   patience: 3,
-//   monitor: "loss",
-//   verbose: 1,
-// });
+// const trainingData = generateTrainingData(1000);
+// const validationData = generateTrainingData(200);
 
-console.log(trainingData);
-console.log(validationData);
-
-// console.log(generateTrainingData(50));
-
-// new tf.data.array([])
-
-// tf.tensor([12345, 4]).print();
-// tf.randomUniform([2], 1, 1000, "int32").print();
-// tf.randomUniform([2], 1, 1000, "int32").print();
-// tf.randomUniform([2], 1, 1000, "int32").print();
+const trainingData = generateTrainingDataset(1000);
+const validationData = generateTrainingDataset(200);
 
 getModel().then((model) => {
+  // model.fit(tf.tensor([trainingData[1].xs]), tf.tensor([trainingData[1].ys]), {
+  //   epochs: 100,
+  //   verbose: 1,
+  // });
+
   model.fitDataset(trainingData, {
     validationData,
-    epochs: 100,
+    epochs: 1,
     // callbacks: [callback],
     verbose: 1,
   });
-  // model.save("file://", MODEL_FILE).then(() => {
-  // console.log(
-  //   model.weights.map(({ name, shape }) => ({
-  //     name,
-  //     shape,
-  //   }))
-  // );
+  // .then(() => {
+  //   model.predict(tf.tensor([[5, 5]])).print();
+  //   model.predict(tf.tensor([[5, 6]])).print();
+  //   model.predict(tf.tensor([[5, 7]])).print();
   // });
+
+  // model.save("file://", MODEL_FILE).then(() => {
 });
