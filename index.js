@@ -12,7 +12,7 @@ const createModel = async () => {
   });
 
   const hidden = tf.layers
-    .dense({ units: 20, activation: "relu" })
+    .dense({ units: 20, activation: "tanh" })
     .apply(inputs);
 
   // const hidden2 = tf.layers
@@ -20,7 +20,7 @@ const createModel = async () => {
   //   .apply(hidden);
 
   const outputs = tf.layers
-    .dense({ units: 1, activation: "softmax" })
+    .dense({ units: 1, activation: "sigmoid" })
     .apply(hidden);
 
   const model = tf.model({ inputs: inputs, outputs });
@@ -28,7 +28,7 @@ const createModel = async () => {
   model.compile({
     loss: "meanSquaredError",
     // optimizer: "adagrad",
-    optimizer: tf.train.adam(100),
+    optimizer: tf.train.adam(),
     // metrics: [tf.metrics.binaryAccuracy],
     metrics: ["accuracy"],
   });
@@ -104,7 +104,7 @@ getModel().then((model) => {
 
   model.fitDataset(trainingData, {
     validationData,
-    epochs: 1,
+    epochs: 100,
     // callbacks: [callback],
     verbose: 1,
   });
