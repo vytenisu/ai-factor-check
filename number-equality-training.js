@@ -179,12 +179,13 @@ getModel().then(async (model) => {
 
   const data = [];
 
-  const k = 1;
+  const k = 20000;
 
   console.log("Loading graph data sample...");
+
   for (let i = 0; i < 50; i++) {
     for (let j = 0; j <= 50; j++) {
-      const result = model.predict(tf.tensor([[i * k, j * k]]));
+      const result = model.predict(tf.tensor([[scale(i * k), scale(j * k)]]));
 
       if (Math.round(result.dataSync()[0]) > 0.5) {
         data.push({ x: i * k, y: j * k });

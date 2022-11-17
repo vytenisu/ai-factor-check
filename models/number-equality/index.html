@@ -7,7 +7,8 @@
   <body>
     <input id="first" />
     <input id="second" />
-    <button id="confirm">Evaluate</button>
+    <button type="submit" id="confirm">Evaluate</button>
+    <div id="result"></div>
     <script>
       const MODEL_PATH = "model.json";
 
@@ -21,9 +22,13 @@
 
         const prediction = await model.predict(tf.tensor([[A, B]]));
 
-        prediction.print();
+        const equalProbability = Array.from(prediction.dataSync())[0];
 
-        console.log(prediction);
+        const equal = Math.round(equalProbability);
+
+        document.getElementById("result").innerText = `${A} and ${B} are ${
+          equal ? "" : "NOT "
+        }equal!`;
       };
 
       document.getElementById("confirm").addEventListener("click", compare);
