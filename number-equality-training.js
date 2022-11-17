@@ -125,21 +125,20 @@ const generateTrainingData = (amountOfPairs) => {
 };
 
 const generateTrainingDataset = (amountOfPairs) =>
-  tf.data.array(generateTrainingData(amountOfPairs)).shuffle(100).batch(100);
+  tf.data.array(generateTrainingData(amountOfPairs)).shuffle(10).batch(10);
 
 const trainingData = generateTrainingDataset(1000);
 const validationData = generateTrainingDataset(1000);
 
-const earlyStop = tf.callbacks.earlyStopping({
-  patience: 5,
-  minDelta: 0.001,
-  mode: "min",
-  verbose: 1,
-});
+// const earlyStop = tf.callbacks.earlyStopping({
+//   patience: 50,
+//   minDelta: 0.001,
+//   mode: "min",
+//   verbose: 1,
+// });
 
 getModel().then(async (model) => {
   const save = {
-    // cachedModel: null,
     bestAccuracy: null,
 
     setParams() {},
@@ -179,7 +178,7 @@ getModel().then(async (model) => {
 
   const data = [];
 
-  const k = 20000;
+  const k = 100;
 
   console.log("Loading graph data sample...");
 

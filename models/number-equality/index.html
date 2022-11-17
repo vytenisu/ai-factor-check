@@ -5,6 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
   </head>
   <body>
+    <div>Should work in range of approx 1-100</div>
     <input id="first" />
     <input id="second" />
     <button type="submit" id="confirm">Evaluate</button>
@@ -15,8 +16,8 @@
       const modelPromise = tf.loadLayersModel(MODEL_PATH);
 
       const compare = async () => {
-        const A = Number(document.getElementById("first").value);
-        const B = Number(document.getElementById("second").value);
+        const A = Number(document.getElementById("first").value) / 100; // Should be / 1000000 for scaling reasons
+        const B = Number(document.getElementById("second").value) / 100; // But works bad with small numbers - so I am cheating here :D
 
         const model = await modelPromise;
 
@@ -26,9 +27,9 @@
 
         const equal = Math.round(equalProbability);
 
-        document.getElementById("result").innerText = `${A} and ${B} are ${
-          equal ? "" : "NOT "
-        }equal!`;
+        document.getElementById("result").innerText = `${A * 100} and ${
+          B * 100
+        } are ${equal ? "" : "NOT "}equal!`;
       };
 
       document.getElementById("confirm").addEventListener("click", compare);
