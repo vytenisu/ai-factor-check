@@ -9,19 +9,28 @@ const MODEL_FILE = resolve(__dirname, "models", "number-equality");
 const createModel = async () => {
   const inputs = tf.input({
     shape: [2],
-    dtype: "int32",
+    dtype: "float32",
     sparse: false,
   });
 
-  const scaling = tf.layers.rescaling({ scale: 1 / 1000000 }).apply(inputs);
+  // NOT SUPPORTED IN BROWSER
+  // const scaling = tf.layers.rescaling({ scale: 1 / 1000000 }).apply(inputs);
 
   const hidden = tf.layers
-    .dense({ units: 20, activation: "tanh" }) // Looping activator
-    .apply(scaling);
+    .dense({ units: 1, activation: "tanh" }) // Looping activator
+    .apply(inputs);
 
   const hidden2 = tf.layers
-    .dense({ units: 20, activation: "tanh" }) // Looping activator
+    .dense({ units: 20, activation: "relu" }) // Looping activator
     .apply(hidden);
+
+  const hidden3 = tf.layers
+    .dense({ units: 20, activation: "tanh" }) // Looping activator
+    .apply(hidden2);
+
+  const hidden4 = tf.layers
+    .dense({ units: 20, activation: "relu" }) // Looping activator
+    .apply(hidden3);
 
   // const hidden2 = tf.layers
   //   .dense({ units: 20, activation: "elu" }) // Looping activator
@@ -32,7 +41,7 @@ const createModel = async () => {
 
   const outputs = tf.layers
     .dense({ units: 1, activation: "sigmoid" }) // Binary activator
-    .apply(hidden2);
+    .apply(hidden4);
 
   const model = tf.model({ inputs: inputs, outputs });
   compileModel(model);
@@ -42,10 +51,16 @@ const createModel = async () => {
 
 const compileModel = (notCompiledModel) => {
   notCompiledModel.compile({
-    loss: "meanSquaredError", // Used for optimization
+    loss: tf.metrics.binaryCrossentropy,
+    // loss: tf.losses.meanSquaredError,
+    // loss: tf.losses.meanSquaredError,
+    // loss: "meanSquaredError", // Used for optimization
     optimizer: tf.train.adam(),
     // Adjusts learning rate (step size) automatically. SGD fails - weights become NaN due to incorrect learning rate.
-    metrics: [tf.metrics.binaryAccuracy], // Just for evaluation of model
+    metrics: [
+      tf.metrics.binaryAccuracy,
+      // tf.metrics.,
+    ], // Just for evaluation of model
   });
 };
 
@@ -87,12 +102,14 @@ const getBad = (mainNumber) => {
   return candidate;
 };
 
+const scale = (value) => value / 1000000;
+
 const generateTrainingItems = () => {
   const number = getRandomNumber(0, 1000000);
 
   return [
-    [number, getGood(number)],
-    [number, getBad(number)],
+    [scale(number), scale(getGood(number))],
+    [scale(number), scale(getBad(number))],
   ];
 };
 
@@ -111,10 +128,11 @@ const generateTrainingDataset = (amountOfPairs) =>
   tf.data.array(generateTrainingData(amountOfPairs)).shuffle(100).batch(100);
 
 const trainingData = generateTrainingDataset(1000);
-const validationData = generateTrainingDataset(200);
+const validationData = generateTrainingDataset(1000);
 
 const earlyStop = tf.callbacks.earlyStopping({
-  patience: 50,
+  patience: 5,
+  minDelta: 0.001,
   mode: "min",
   verbose: 1,
 });
@@ -161,10 +179,11 @@ getModel().then(async (model) => {
 
   const data = [];
 
-  const k = 10000;
+  const k = 1;
 
-  for (let i = 1; i <= 50; i++) {
-    for (let j = 1; j <= 50; j++) {
+  console.log("Loading graph data sample...");
+  for (let i = 0; i < 50; i++) {
+    for (let j = 0; j <= 50; j++) {
       const result = model.predict(tf.tensor([[i * k, j * k]]));
 
       if (Math.round(result.dataSync()[0]) > 0.5) {
@@ -172,9 +191,9 @@ getModel().then(async (model) => {
       }
     }
 
-    if (i % 5) {
-      console.log(i * 2 + "%");
-    }
+    // if (i % 5) {
+    //   console.log(i * 2 + "%");
+    // }
   }
 
   const renderer = new ChartJSNodeCanvas({ width: 500, height: 500 });

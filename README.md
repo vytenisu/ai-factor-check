@@ -1,6 +1,11 @@
+# About this repository
+
+This repository is a total mess. It's purpose is to do quick POCs while learning about neuro-networks.
+This repository is not meant to be easy to read or re-used. If you find something useful - please take it BUT I am not planning to support it in any way nor do I guarantee that things will work.
+
 # Random notes
 
-Dependencies:
+Dependencies for training:
 
 - Visual Studio 2022 with c++ support
 - NVIDIA Cuda
@@ -8,8 +13,6 @@ Dependencies:
 - WSL
 - Python 2.7
 - npm install --global @tensorflow/tfjs-node-gpu
-
-Use ml5 for execution in browser
 
 Examples of model creation:
 
