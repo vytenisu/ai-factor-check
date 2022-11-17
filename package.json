@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/vytenisu/ai-factor-check#readme",
   "dependencies": {
-    "@tensorflow/tfjs-node-gpu": "^4.0.0"
+    "@tensorflow/tfjs-node-gpu": "^4.0.0",
+    "chartjs-node-canvas": "^4.1.6",
+    "chrome-launcher": "^0.15.1"
   }
 }

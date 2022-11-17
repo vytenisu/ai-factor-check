@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Equality :)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+  </head>
+  <body>
+    <input id="first" />
+    <input id="second" />
+    <button id="confirm">Evaluate</button>
+    <script>
+      const MODEL_PATH = "model.json";
+
+      const modelPromise = tf.loadLayersModel(MODEL_PATH);
+
+      const compare = async () => {
+        const A = Number(document.getElementById("first").value);
+        const B = Number(document.getElementById("second").value);
+
+        const model = await modelPromise;
+
+        const prediction = await model.predict(tf.tensor([[A, B]]));
+
+        prediction.print();
+
+        console.log(prediction);
+      };
+
+      document.getElementById("confirm").addEventListener("click", compare);
+    </script>
+  </body>
+</html>

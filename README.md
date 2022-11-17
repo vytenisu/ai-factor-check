@@ -1,4 +1,4 @@
-Notes:
+# Random notes
 
 Dependencies:
 
@@ -7,9 +7,6 @@ Dependencies:
 - CuDNN
 - WSL
 - Python 2.7
-
-- Node 17.9.1 (???)
-- npm install --global --production windows-build-tools
 - npm install --global @tensorflow/tfjs-node-gpu
 
 Use ml5 for execution in browser
@@ -36,4 +33,14 @@ model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
 
 // Prepare the model for training: Specify the loss and the optimizer.
 model.compile({ loss: "meanSquaredError", optimizer: "sgd" });
+```
+
+Training on one sample at a time:
+
+```javascript
+// fit is lower level than fitDataset - it accepts one large tensor instead of Dataset object
+model.fit(tf.tensor([trainingData[1].xs]), tf.tensor([trainingData[1].ys]), {
+  epochs: 100,
+  verbose: 1,
+});
 ```
